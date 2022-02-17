@@ -27,6 +27,24 @@ const LayoutFlow = ({ recipeType = 0 }) => {
   const [instance, setInstance] = useState(null);
   const [elements, setElements] = useState(null);
 
+  let levelTitle;
+
+  switch(recipeType) {
+    case 0: levelTitle = 'Recipe'; break;
+    case 1: levelTitle = 'Unit Procedure'; break;
+    case 2: levelTitle = 'Operation'; break;
+    default: {}
+  }
+
+  const BackBtn = () => {
+    return (
+      <>
+        <button onClick={() => navigate(-1)}>{'<'}</button>
+        &nbsp; &nbsp;
+      </>
+    )
+  }
+
   // fetch recipe by level (recipe, unit procedure, operation)
   React.useEffect(() => {
     const query = recipeLevels[recipeType];
@@ -96,6 +114,15 @@ const LayoutFlow = ({ recipeType = 0 }) => {
 
   return (
     <div className="layoutflow" key={`${id}-${recipeType}`}>
+      <h2 style={{
+        background: '#eee',
+        padding: '1rem',
+        margin: 0,
+        fontSize: '1rem'
+      }}>
+      <BackBtn />
+      {levelTitle}: {recipe.name}
+      </h2>
       <ReactFlow
         nodesDraggable={true}
         elements={elements}
@@ -113,10 +140,8 @@ const LayoutFlow = ({ recipeType = 0 }) => {
         position: 'absolute',
         top: 0,
         right: 0,
-        padding: 20,
-        zIndex: 9999,
-        background: '#eee',
-        color: '#999'
+        padding: '1rem',
+        zIndex: 9999
       }}>
         {/* <button onClick={onSave}>save</button>
         &nbsp; | &nbsp; */}

@@ -109,3 +109,7 @@ header select {
 #recipe-list li a:hover {
   background-color: yellow;
 }
+
+button {
+  cursor: pointer;
+}
