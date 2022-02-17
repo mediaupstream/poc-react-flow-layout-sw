@@ -1,7 +1,6 @@
 {
   "name": "react-flow",
   "version": "1.0.0",
-  "homepage": "https://mediaupstream.github.io/poc-react-flow-layout-sw",
   "description": "",
   "keywords": [],
   "main": "src/index.js",
