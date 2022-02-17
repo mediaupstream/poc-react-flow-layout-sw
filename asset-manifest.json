@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/poc-react-flow-layout-sw/static/css/main.c9e3d932.chunk.css",
+    "main.js": "/poc-react-flow-layout-sw/static/js/main.66749fdd.chunk.js",
+    "main.js.map": "/poc-react-flow-layout-sw/static/js/main.66749fdd.chunk.js.map",
+    "runtime-main.js": "/poc-react-flow-layout-sw/static/js/runtime-main.d57c354f.js",
+    "runtime-main.js.map": "/poc-react-flow-layout-sw/static/js/runtime-main.d57c354f.js.map",
+    "static/js/2.256c5a8d.chunk.js": "/poc-react-flow-layout-sw/static/js/2.256c5a8d.chunk.js",
+    "static/js/2.256c5a8d.chunk.js.map": "/poc-react-flow-layout-sw/static/js/2.256c5a8d.chunk.js.map",
+    "index.html": "/poc-react-flow-layout-sw/index.html",
+    "precache-manifest.9a21b93d9a68307b9078f37e21664444.js": "/poc-react-flow-layout-sw/precache-manifest.9a21b93d9a68307b9078f37e21664444.js",
+    "service-worker.js": "/poc-react-flow-layout-sw/service-worker.js",
+    "static/css/main.c9e3d932.chunk.css.map": "/poc-react-flow-layout-sw/static/css/main.c9e3d932.chunk.css.map",
+    "static/js/2.256c5a8d.chunk.js.LICENSE.txt": "/poc-react-flow-layout-sw/static/js/2.256c5a8d.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.d57c354f.js",
+    "static/js/2.256c5a8d.chunk.js",
+    "static/css/main.c9e3d932.chunk.css",
+    "static/js/main.66749fdd.chunk.js"
+  ]
+}
