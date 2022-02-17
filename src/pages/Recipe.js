@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useCallback } from "react";
 import ReactFlow, { removeElements } from "react-flow-renderer";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 import { Step, Transition } from "../Nodes";
 import { processRecipe, connect  } from "../data";
@@ -21,20 +21,20 @@ const recipeLevels = [
 
 const LayoutFlow = ({ recipeType = 0 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { id } = useParams();
-  const [autoLayout, setAuto] = useState(false);
+  const [autoLayout, setAuto] = useState(location?.state?.autoLayout || false);
   const [recipe, setRecipe] = useState(null);
   const [instance, setInstance] = useState(null);
   const [elements, setElements] = useState(null);
 
-  let levelTitle;
-
-  switch(recipeType) {
-    case 0: levelTitle = 'Recipe'; break;
-    case 1: levelTitle = 'Unit Procedure'; break;
-    case 2: levelTitle = 'Operation'; break;
-    default: {}
-  }
+  const levelTitle = (() => {
+    switch(recipeType) {
+      case 0: return 'Recipe';
+      case 1: return 'Unit Procedure';
+      case 2: return 'Operation';
+    }
+  })()
 
   const BackBtn = () => {
     return (
@@ -94,7 +94,7 @@ const LayoutFlow = ({ recipeType = 0 }) => {
       }
       if (path) {
         const id = data.ref.link_id;
-        navigate(`/${path}/${id}`)
+        navigate(`/${path}/${id}`, { state: { autoLayout }})
       }
     }
   }

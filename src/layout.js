@@ -23,6 +23,8 @@ const computeLayout = (elements, auto = false) => {
   const loopback = elements.filter((n) => n.loopback);
   elements = elements.filter((n) => !n?.loopback);
   dagreGraph.setGraph({
+    // minlen: 10,
+    // weight: 1,
     rankdir: "TB",
     align: "UL",
     // acyclicer: "greedy",
