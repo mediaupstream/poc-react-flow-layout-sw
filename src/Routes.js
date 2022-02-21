@@ -4,9 +4,20 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
+import { ReactFlowProvider } from "react-flow-renderer";
 
 import Recipe from './pages/Recipe';
 import Recipes from './pages/Recipes';
+
+const RC = (props) => <Recipe {...props} />
+const UP = (props) => <Recipe {...props} />
+const OP = (props) => <Recipe {...props} />
+
+const withRecipe = (props, Component) => (
+  <ReactFlowProvider>
+    <Component {...props} />
+  </ReactFlowProvider>
+)
 
 export default function MyRoutes() {
   return (
@@ -16,15 +27,15 @@ export default function MyRoutes() {
         <Route path='/recipe' element={<Recipes />} />
         <Route
           path="/recipe/:id"
-          element={<Recipe key='recipe' recipeType={0} />}
+          element={withRecipe({ key: 'recipe', recipeType: 0 }, RC)}
         />
         <Route
           path="/unit_procedure/:id"
-          element={<Recipe key='unit_procedure' recipeType={1} />}
+          element={withRecipe({ key: 'unit_procedure', recipeType: 1 }, UP)}
         />
         <Route
           path="/operation/:id"
-          element={<Recipe key='operation' recipeType={2} />}
+          element={withRecipe({ key: 'operation', recipeType: 2 }, OP)}
         />
       </Routes>
     </Router>

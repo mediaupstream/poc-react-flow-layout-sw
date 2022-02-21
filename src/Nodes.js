@@ -2,55 +2,88 @@ import React, { memo } from "react";
 import { nodeWidth } from './layout';
 import { Handle } from "react-flow-renderer";
 
-
-export const Transition = memo(({ data, isConnectable = true }) => {
-  // const node = useStoreState((state) => state.transform);
-  // console.log("Transition", node, data);
-  return (
-    <div style={{ padding: "0.5rem 2rem", width: nodeWidth }}>
-      <Handle
-        id="target"
-        type="target"
-        position="top"
-        isConnectable={isConnectable}
-      />
-      <div>{data.label}</div>
-      <Handle type="source" position="bottom" isConnectable={isConnectable} />
-    </div>
-  );
-});
-
-const stepStyle = {
+const style = {
   border: "1px solid #eee",
-  boxShadow: "0px 2px 8px rgba(8, 35, 48, 0.14)",
-  borderRadius: "8px",
   fontSize: 12,
   color: "#222",
   background: "#fff",
-  padding: 10,
-  width: nodeWidth,
+  padding: '1rem',
+  minWidth: nodeWidth,
   textAlign: "center"
 };
 
-export const Step = memo(({ data, isConnectable = true }) => {
-  // const node = useStoreState((state) => state.transform);
-  // console.log("Step", node, data);
-  return (
-    <div style={stepStyle}>
-      <Handle type="target" position="top" isConnectable={isConnectable} />
-      <div>{data.label}</div>
-      <Handle
-        id="source"
-        type="source"
-        position="bottom"
-        isConnectable={isConnectable}
-      />
-      <Handle
-        id="loopback"
-        type="source"
-        position="right"
-        isConnectable={isConnectable}
-      />
-    </div>
-  );
-});
+const transitionStyle = {
+  ...style,
+  background: "#e5efff",
+  paddingTop: "0.45rem",
+  paddingBottom: "0.45rem",
+}
+
+const startStyle = {
+  ...style,
+  background: "#eafce3",
+}
+
+const endStyle = {
+  ...style,
+  background: "#ffe6e6",
+}
+
+const stepStyle = {
+  ...style,
+  boxShadow: "0px 2px 8px rgba(8, 35, 48, 0.14)",
+  borderRadius: "8px",
+}
+
+export const Start = memo(({ data, isConnectable = true }) => (
+  <div style={startStyle}>
+    <div>{data.label}</div>
+    <Handle id="source" type="source" position="bottom" isConnectable={isConnectable} />
+  </div>
+))
+
+
+export const End = memo(({ data, isConnectable = true }) => (
+  <div style={endStyle}>
+    <Handle id="source" type="target" position="top" isConnectable={isConnectable} />
+    <div>{data.label}</div>
+  </div>
+))
+
+export const Transition = memo(({ data, isConnectable = true }) => (
+  <div style={transitionStyle}>
+    <Handle
+      id="target"
+      type="target"
+      position="top"
+      isConnectable={isConnectable}
+    />
+    <div>{data.label}</div>
+    <Handle id="source" type="source" position="bottom" isConnectable={isConnectable} />
+    <Handle
+      id="loopback"
+      type="source"
+      position="right"
+      isConnectable={isConnectable}
+    />
+  </div>
+))
+
+export const Step = memo(({ data, isConnectable = true }) => (
+  <div style={stepStyle}>
+    <Handle id="target" type="target" position="top" isConnectable={isConnectable} />
+    <div>{data.label}</div>
+    <Handle
+      id="source"
+      type="source"
+      position="bottom"
+      isConnectable={isConnectable}
+    />
+    <Handle
+      id="loopback"
+      type="target"
+      position="right"
+      isConnectable={isConnectable}
+    />
+  </div>
+))

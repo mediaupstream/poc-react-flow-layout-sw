@@ -2,18 +2,18 @@ import dagre from "dagre";
 import { isNode } from "react-flow-renderer";
 
 export const nodeWidth = 170;
-export const nodeHeight = 45;
+export const nodeHeight = 28;
 
 const computeLayout = (elements, auto = false) => {
-
+  console.log('[computed layout]', { elements, auto })
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
   const addEl = (el) => {
     if (isNode(el)) {
       dagreGraph.setNode(el.id, {
-        width: nodeWidth,
-        height: nodeHeight
+        width: el?.width ?? nodeWidth,
+        height: el?.height ?? nodeHeight
       });
     } else {
       dagreGraph.setEdge(el.source, el.target);
@@ -23,13 +23,11 @@ const computeLayout = (elements, auto = false) => {
   const loopback = elements.filter((n) => n.loopback);
   elements = elements.filter((n) => !n?.loopback);
   dagreGraph.setGraph({
-    // minlen: 10,
-    // weight: 1,
+    edgesep: 100,
     rankdir: "TB",
     align: "UL",
-    // acyclicer: "greedy",
-    // ranker: "tight-tree"
-    // ranker: "longest-path"
+    marginx: 20,
+    marginy: 20,
   });
 
   elements.forEach(addEl);
@@ -39,26 +37,15 @@ const computeLayout = (elements, auto = false) => {
     if (isNode(el)) {
       el.targetPosition = "top";
       el.sourcePosition = "bottom";
-      let offset = 0;
-      if (
-        el?.data?.type === 'transition' ||
-        el?.type === 'output'
-      ) {
-        offset = 50;
-      }
-      if (el?.type === 'input') {
-        offset = 25;
-      }
       if (auto) {
-        console.log('using auto coords')
         const { x, y } = dagreGraph.node(el.id);
-        el.position = { x, y };
-      } else {
-        console.log('using existing coords')
+        const wOffset = (el?.width || 0) / 2 + (Math.random() / 1000)
+        const hOffset = (el?.height || 0) / 2
+        el.computed = el?.width ? true : false;
         el.position = {
-          x: (el.position.x / 4) - offset,
-          y: el.position.y / 3
-        }
+          x: x - wOffset,
+          y: y - hOffset
+        };
       }
     }
 

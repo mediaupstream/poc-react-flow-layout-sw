@@ -113,3 +113,21 @@ header select {
 button {
   cursor: pointer;
 }
+
+.react-flow__node {
+  border: 2px solid transparent;
+}
+.react-flow__node.selected {
+  border: 2px solid pink;
+}
+
+.react-flow__edge path {
+  cursor: pointer;
+  stroke-width: 2;
+  background-color: 'pink';
+  padding: 2rem;
+}
+.react-flow__edge.selected path,
+.react-flow__edge:hover path {
+  stroke-width: 4;
+}

@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useCallback } from "react";
-import ReactFlow, { removeElements } from "react-flow-renderer";
+import ReactFlow, { removeElements, useStoreState, useStoreActions } from "react-flow-renderer";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 
-import { Step, Transition } from "../Nodes";
-import { processRecipe, connect  } from "../data";
+import { Step, Transition, Start, End } from "../Nodes";
+import { processRecipe, connect, normalizeCoords  } from "../data";
 import computeLayout from '../layout';
 import { getRecipe, getUnitProcedure, getOperation } from '../fetch';
 
@@ -20,13 +20,16 @@ const recipeLevels = [
 ]
 
 const LayoutFlow = ({ recipeType = 0 }) => {
+  const [init, setInit] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
-  const [autoLayout, setAuto] = useState(location?.state?.autoLayout || false);
+  const [autoLayout, setAuto] = useState(location?.state?.autoLayout || true);
   const [recipe, setRecipe] = useState(null);
   const [instance, setInstance] = useState(null);
   const [elements, setElements] = useState(null);
+  const nodes = useStoreState((state) => state.nodes)
+  const actions = useStoreActions((actions) => actions);
 
   const levelTitle = (() => {
     switch(recipeType) {
@@ -45,6 +48,38 @@ const LayoutFlow = ({ recipeType = 0 }) => {
     )
   }
 
+  React.useEffect(() => {
+    // wait until we have elements, and nodes
+    if (elements?.length && nodes?.length && !init) {
+      const stepIds = elements.filter(n => !('source' in n)).map(n => n.id);
+      const nodeIds = nodes.filter(n => n?.__rf?.height > 0 && n?.__rf?.width > 0).map(n => n.id)
+      // wait until all nodes have a computed height/width value
+      // and that node ids match all step ids
+      const ready =
+        nodeIds.length === stepIds.length &&
+        nodeIds.every(id => stepIds.includes(id))
+
+      console.log('init', [stepIds.length, nodeIds.length], { stepIds, nodeIds, ready })
+
+      if (ready) {
+        // set the computed width/height for elements and compute the layout!
+        const res = elements.map(el => {
+          if (!stepIds.includes(el.id)) {
+            return el
+          }
+          const { width, height } = (nodes.find(n => n.id === el.id)?.__rf || {})
+          return {
+            ...el,
+            width,
+            height
+          }
+        })
+        setInit(true);
+        setElements([ ...computeLayout([ ...res], true) ]);
+      }
+    }
+  }, [nodes, elements, init, setElements, setInit])
+
   // fetch recipe by level (recipe, unit procedure, operation)
   React.useEffect(() => {
     const query = recipeLevels[recipeType];
@@ -54,7 +89,7 @@ const LayoutFlow = ({ recipeType = 0 }) => {
           console.log('fetch remote data', data);
           setRecipe(data);
           setElements(
-            computeLayout(processRecipe(data), autoLayout)
+            processRecipe(data)
           );
         })
         .catch(console.log)
@@ -62,20 +97,19 @@ const LayoutFlow = ({ recipeType = 0 }) => {
   }, [])
 
   const toggleAutoLayout = () => {
-    console.log('toggle layout', !autoLayout);
-    setAuto(n => !n);
-    setElements([
-      ...computeLayout(processRecipe(recipe), !autoLayout)
+    // setAuto(n => !n);
+    setElements(n => [
+      ...computeLayout(n, true)
     ]);
   }
 
   const onConnect = ({ source, target, sourceHandle }) => {
     const edge = connect(source, target, sourceHandle === 'loopback');
-    setElements(n => computeLayout([...n, edge]));
+    setElements(n => [ ...n, edge ]);
   }
 
   const onElementsRemove = (elementsToRemove) => {
-    setElements((els) => removeElements(elementsToRemove, els));
+    setElements(n => [ ...removeElements(elementsToRemove, n) ]);
   }
 
   const onSave = useCallback(() => {
@@ -124,7 +158,12 @@ const LayoutFlow = ({ recipeType = 0 }) => {
       {levelTitle}: {recipe.name}
       </h2>
       <ReactFlow
+        key={`flow-${nodes.length}`}
+        style={{
+          opacity: init ? 1 : 0,
+        }}
         nodesDraggable={true}
+        snapToGrid={true}
         elements={elements}
         onConnect={onConnect}
         onElementsRemove={onElementsRemove}
@@ -133,7 +172,9 @@ const LayoutFlow = ({ recipeType = 0 }) => {
         onNodeDoubleClick={handleLoadRecipe}
         nodeTypes={{
           step: Step,
-          transition: Transition
+          transition: Transition,
+          start: Start,
+          end: End,
         }}
       />
       <div className="save__controls" style={{

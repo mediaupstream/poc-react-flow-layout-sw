@@ -2,30 +2,19 @@ import { nodeWidth, nodeHeight } from './layout';
 const edgeType = "smoothstep"; // smoothstep, step, default, straight
 
 const styles = {
-  input: {
-    background: "#eafce3",
-    border: 0,
-    width: nodeWidth,
-  },
-  output: {
-    background: "#ffe6e6",
-    border: 0,
-    width: nodeWidth
-  },
-  transition: {
-    background: "#e5efff",
-    paddingTop: "0.45rem",
-    paddingBottom: "0.45rem",
-    border: 0,
-    width: nodeWidth
-  },
   default: {
     border: "1px solid #eee",
     boxShadow: "0px 2px 8px rgba(8, 35, 48, 0.14)",
     borderRadius: "8px",
-    width: nodeWidth
+    minWidth: nodeWidth
   }
 };
+
+const transitionLabel = (text) => {
+  // const n = Math.floor(Math.random() * 10) % 3
+  // return text + (n === 0 ? 'STEP.TEST.COMPLETED = TRUE AND STEP.INITIALIZE OR BIG.TEXTBLOCK = 9939944 > STEP.START = COMPLETED' : '')
+  return text;
+}
 
 const truncateLabel = (text, len = 20) => {
   if (text.length <= len) {
@@ -34,25 +23,22 @@ const truncateLabel = (text, len = 20) => {
   return text.substring(0, len) + '...'
 }
 
+const FROM_STEP = 21;
+const FROM_TRANS = 22;
+
 const isLoopback = (item, recipe) => {
   const { from_type, from_name, to_name } = item;
-
-  let source;
-  let target;
-
-  if (from_type === 21) {
-    source = recipe.step.find(n => n.name === from_name);
-    target = recipe.transition.find(n => n.name === to_name);
-  } else {
-    source = recipe.transition.find(n => n.name === from_name);
-    target = recipe.step.find(n => n.name === to_name);
+  if (from_type !== FROM_TRANS) {
+    return false;
   }
-
+  // a loopback connection must be a transition -> step
+  // where the target (step) is higher up (smaller y value) than the source (transition)
+  const source = recipe.transition.find(n => n.name === from_name);
+  const target = recipe.step.find(n => n.name === to_name);
   if (target?.y < source?.y) {
-    console.log('isLoopback!!!', from_name, '=>', to_name, { source, target });
+    console.log('[loopback connection]', from_name, '=>', to_name, { source, target });
     return true
   }
-
   return false;
 }
 
@@ -60,10 +46,13 @@ export const connect = (source, target, loopback = false) => ({
   id: `e${source}${target}`,
   source,
   target,
-  type: edgeType,
+  label: loopback ? 'ᐃ' : undefined,
+  type: loopback ? 'default' : 'step',
   sourceHandle: loopback ? "loopback" : "source",
+  targetHandle: loopback ? "loopback" : "target",
   loopback,
   animated: loopback,
+  style: styles['edge'],
   data: {
     type: 'link'
   }
@@ -71,9 +60,9 @@ export const connect = (source, target, loopback = false) => ({
 
 export const step = item => {
   const type = /INITIALSTEP/gi.test(item.name)
-      ? 'input'
+      ? 'start'
       : /TERMINALSTEP/gi.test(item.name)
-        ? 'output'
+        ? 'end'
         : 'step';
   return {
     id: item.name,
@@ -94,17 +83,24 @@ export const step = item => {
 export const transition = item => {
   return {
     id: item.name,
-    type: 'default',
+    type: 'transition',
     data: {
-      label: truncateLabel(item.expression || item.name),
+      label: transitionLabel(item.expression || item.name),
       ref: item,
       type: 'transition'
     },
-    style: styles.transition,
     position: {
       x: item.x,
       y: item.y
     }
+  }
+}
+
+export const normalizeCoords = (item, offset = 0) => {
+  return {
+    ...item,
+    x: (item.x / 4) - offset,
+    y: item.y / 3
   }
 }
 
@@ -129,44 +125,3 @@ export const processRecipe = (recipe) => {
 
   return results
 }
-
-
-/*
-const START_ID = "Start";
-const END_ID = "End";
-
-const test = [
-  // must have a start step
-  step({ id: START_ID, type: "input" }),
-
-  // steps
-  transition({ id: "T1" }),
-  step({ id: "A" }),
-  step({ id: "B" }),
-  step({ id: "B2" }),
-  step({ id: "C" }),
-  transition({ id: "T2" }),
-  transition({ id: "T3" }),
-
-  // must have an end step
-  step({ id: END_ID, type: "output" }),
-
-  // connection aka links
-  connect(START_ID, "T1"),
-  connect("T1", "A"),
-  connect("T1", "B"),
-  connect("A", "T3"),
-  connect("B", "T2"),
-  connect("T2", "B2"),
-  connect("T2", "C"),
-  connect("C", "T3"),
-  connect("B2", "T3"),
-
-  // connect("T1", "B2"),
-  connect("B", "T1", true),
-  connect("B2", "T2", true),
-  // connect("B2", "T1", true),
-
-  connect("T3", END_ID)
-];
-*/
