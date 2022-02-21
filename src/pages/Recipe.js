@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useCallback } from "react";
 import ReactFlow, { removeElements, useStoreState, useStoreActions } from "react-flow-renderer";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 
 import { Step, Transition, Start, End } from "../Nodes";
 import { processRecipe, connect, normalizeCoords  } from "../data";
@@ -18,6 +18,33 @@ const recipeLevels = [
   getUnitProcedure,
   getOperation
 ]
+
+
+const Sidebar = ({ recipe, recipeType }) => {
+  const steps = recipe.filter(n => n?.type === 'step' && n?.data?.ref?.link_id?.length);
+  let path;
+  switch(recipeType) {
+    case 0: path = 'unit_procedure'; break;
+    case 1: path = 'operation'; break;
+  }
+
+  const link = (step) => `/${path}/${step?.data?.ref?.link_id}`;
+  return (
+    <div className="sidebar">
+      <ul>
+      {steps.map(step => (
+        <li key={step.id}>
+          {path
+            ? <Link to={link(step)}>{step?.data?.label}</Link>
+            : <a>{step?.data?.label}</a>
+          }
+        </li>
+      ))}
+      </ul>
+    </div>
+  )
+}
+
 
 const LayoutFlow = ({ recipeType = 0 }) => {
   const [init, setInit] = useState(false);
@@ -157,10 +184,14 @@ const LayoutFlow = ({ recipeType = 0 }) => {
       <BackBtn />
       {levelTitle}: {recipe.name}
       </h2>
+
+      <Sidebar recipe={elements} recipeType={recipeType} />
+
       <ReactFlow
         key={`flow-${nodes.length}`}
         style={{
           opacity: init ? 1 : 0,
+          marginLeft: '222px'
         }}
         nodesDraggable={true}
         snapToGrid={true}

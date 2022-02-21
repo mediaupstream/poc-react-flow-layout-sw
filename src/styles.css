@@ -131,3 +131,32 @@ button {
 .react-flow__edge:hover path {
   stroke-width: 4;
 }
+
+
+.sidebar {
+  width: 222px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  border-right: 1px solid #aaa;
+  margin-top: 3.3rem;
+  background: #f9f9f9;
+  z-index:9999;
+  overflow-y: scroll;
+}
+.sidebar ul {
+  list-style-type: none;
+  margin:1rem 0 0;
+  padding:0;
+}
+.sidebar ul li a {
+  display: block;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.sidebar ul li a:hover {
+  color: #000;
+  background: #eee;
+}
