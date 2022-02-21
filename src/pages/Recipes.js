@@ -22,7 +22,7 @@ export default function RecipesPage() {
   return (
     <div style={{ padding: '10rem' }}>
       <h2>Recipes list</h2>
-      {list.length && (
+      {list.length ? (
         <ul id='recipe-list'>
           {list.map(({ id, name }) =>
             <li key={`link-${id}-${name}`}>
@@ -30,11 +30,9 @@ export default function RecipesPage() {
             </li>
           )}
         </ul>
-      )}
-      {!list.length && (
+      ) : (
         <div>Loading Recipes...</div>
       )}
-
       <Note>
         <em><strong>Note:</strong></em> You can drill down into a STEP by double clicking on it
       </Note>
