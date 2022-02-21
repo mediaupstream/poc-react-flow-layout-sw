@@ -38,12 +38,6 @@ export default function RecipesPage() {
       <Note>
         <em><strong>Note:</strong></em> You can drill down into a STEP by double clicking on it
       </Note>
-      <Note>
-        You can toggle the layout between 'existing' and 'auto':<br />
-        - <strong>Existing</strong> layout will use the x/y values from each step to render the layout.
-        <br />
-        - <strong>Auto</strong> layout will generate the x/y values for each step based on a derived heirarchy (using the links between steps and transitions)
-      </Note>
     </div>
   )
 }
