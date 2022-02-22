@@ -1,5 +1,5 @@
 import { nodeWidth, nodeHeight } from './layout';
-const edgeType = "smoothstep"; // smoothstep, step, default, straight
+const edgeType = "special"; // smoothstep, step, default, straight
 
 const styles = {
   default: {
@@ -46,15 +46,16 @@ export const connect = (source, target, loopback = false) => ({
   id: `e${source}${target}`,
   source,
   target,
-  label: loopback ? 'ᐃ' : undefined,
-  type: loopback ? 'default' : 'step',
+  label: loopback ? 'ᐊ' : undefined,
+  type: 'special',
   sourceHandle: loopback ? "loopback" : "source",
   targetHandle: loopback ? "loopback" : "target",
   loopback,
   animated: loopback,
   style: styles['edge'],
   data: {
-    type: 'link'
+    type: 'link',
+    loopback
   }
 });
 

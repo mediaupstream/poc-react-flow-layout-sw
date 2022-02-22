@@ -8,6 +8,8 @@ import { processRecipe, connect, normalizeCoords  } from "../data";
 import computeLayout from '../layout';
 import { getRecipe, getUnitProcedure, getOperation } from '../fetch';
 
+import SpecialEdge from '../SpecialEdge';
+
 // test data:
 // import mockRecipe from '../data/recipe.json';
 // import mockOperation from '../data/op.json';
@@ -201,6 +203,9 @@ const LayoutFlow = ({ recipeType = 0 }) => {
         connectionLineType="step"
         onLoad={setInstance}
         onNodeDoubleClick={handleLoadRecipe}
+        edgeTypes={{
+          special: SpecialEdge
+        }}
         nodeTypes={{
           step: Step,
           transition: Transition,
