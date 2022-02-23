@@ -35,17 +35,23 @@ const computeLayout = (elements, auto = false) => {
 
   const res = elements.map((el) => {
     if (isNode(el)) {
+      console.log('mom', el, { width: el.width, height: el.height });
       el.targetPosition = "top";
       el.sourcePosition = "bottom";
       if (auto) {
         const { x, y } = dagreGraph.node(el.id);
-        const wOffset = (el?.width || 0) / 2 + (Math.random() / 1000)
-        const hOffset = (el?.height || 0) / 2
+        const wOffset = (el?.width || 200) / 2 + (Math.random() / 1000)
+        const hOffset = (el?.height || 34) / 2
         el.computed = el?.width ? true : false;
         el.position = {
           x: x - wOffset,
           y: y - hOffset
         };
+        // update the data.ref x/y coords as well
+        if (el?.data?.ref) {
+          el.data.ref.x = el.position.x;
+          el.data.ref.y = el.position.y;
+        }
       }
     }
 

@@ -3,7 +3,7 @@ import { EdgeText, getMarkerEnd, getSmoothStepPath } from 'react-flow-renderer';
 
 export default memo(({ style, label, ...props}) => {
   const markerEnd = getMarkerEnd(props.arrowHeadType, props.markerEndId);
-  let [centerX, centerY] = [props.targetX, props.sourceY + 25];
+  let [centerX, centerY] = [props.targetX, props.sourceY + 20];
 
   if (props?.data?.loopback) {
     centerX = props.sourceX;
@@ -16,6 +16,10 @@ export default memo(({ style, label, ...props}) => {
     centerY,
     borderRadius: 0
   });
+
+  if (props?.data?.loopback) {
+    console.log(path)
+  }
 
   const text = label ? (
     <EdgeText

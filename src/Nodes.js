@@ -69,21 +69,32 @@ export const Transition = memo(({ data, isConnectable = true }) => (
   </div>
 ))
 
-export const Step = memo(({ data, isConnectable = true }) => (
-  <div style={stepStyle}>
-    <Handle id="target" type="target" position="top" isConnectable={isConnectable} />
-    <div>{data.label}</div>
-    <Handle
-      id="source"
-      type="source"
-      position="bottom"
-      isConnectable={isConnectable}
-    />
-    <Handle
-      id="loopback"
-      type="target"
-      position="right"
-      isConnectable={isConnectable}
-    />
-  </div>
-))
+export const Step = (onAdd) => memo(({ data, isConnectable = true }) => {
+  const add = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onAdd(data);
+  }
+
+  return (
+    <div style={stepStyle} className="step-container">
+      <Handle id="target" type="target" position="top" isConnectable={isConnectable} />
+      <div className="step-content">
+        {data.label} &nbsp;
+        <button onClick={add} className="step-add">+</button>
+      </div>
+      <Handle
+        id="source"
+        type="source"
+        position="bottom"
+        isConnectable={isConnectable}
+      />
+      <Handle
+        id="loopback"
+        type="target"
+        position="right"
+        isConnectable={isConnectable}
+      />
+    </div>
+  )
+});

@@ -4,7 +4,7 @@ import ReactFlow, { removeElements, useStoreState, useStoreActions } from "react
 import { useParams, useLocation, useNavigate, Link } from "react-router-dom";
 
 import { Step, Transition, Start, End } from "../Nodes";
-import { processRecipe, connect, normalizeCoords  } from "../data";
+import { processRecipe, transition, step, connect, normalizeCoords  } from "../data";
 import computeLayout from '../layout';
 import { getRecipe, getUnitProcedure, getOperation } from '../fetch';
 
@@ -46,6 +46,11 @@ const Sidebar = ({ recipe, recipeType }) => {
     </div>
   )
 }
+
+const newId = ((id = 0) => () => {
+  id++
+  return id;
+})()
 
 
 const LayoutFlow = ({ recipeType = 0 }) => {
@@ -162,6 +167,28 @@ const LayoutFlow = ({ recipeType = 0 }) => {
     }
   }
 
+  const onAdd = React.useCallback(data => {
+    const id = newId();
+    const { operation_id, recipe_id, unit_procedure_id, user_id, x, y } = (data?.ref || {})
+    const res = {
+      id,
+      expression: `${data.label}.STATE = Complete`,
+      name: `T${id}_new`,
+      operation_id,
+      recipe_id,
+      unit_procedure_id,
+      user_id,
+      x,
+      y
+    }
+    const trans = transition(res);
+    const edge = connect(data?.ref?.name, res.name);
+    console.log('hello from onAdd', { data, id, res, trans, edge })
+    setElements(n =>
+      [ ...computeLayout([ ...n, trans, edge ], true)]
+    );
+  }, [setElements, transition, connect, newId, computeLayout])
+
   console.log('recipe state', {
     id,
     recipeType,
@@ -207,7 +234,7 @@ const LayoutFlow = ({ recipeType = 0 }) => {
           special: SpecialEdge
         }}
         nodeTypes={{
-          step: Step,
+          step: Step(onAdd),
           transition: Transition,
           start: Start,
           end: End,
